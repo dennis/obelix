@@ -1,5 +1,4 @@
 require "obelix/version"
 
-module Obelix
-  # Your code goes here...
-end
+require 'obelix/ami'
+require 'obelix/ami/client'
