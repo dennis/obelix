@@ -53,6 +53,11 @@ module Obelix
 
         @last_action_id
       end
+
+      def events
+        r = @events
+        @events = []
+        r
       end
 
       private

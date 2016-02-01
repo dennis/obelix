@@ -1,8 +1,11 @@
 module Obelix
   module AMI
     class Packet
+      attr_reader :unparsed_lines
+
       def initialize(options = {})
         @hash = {}
+        @unparsed_lines = []
 
         options.each do |k,v|
           self[k.downcase] = v
@@ -19,6 +22,10 @@ module Obelix
 
       def [](key)
         @hash[key.downcase]
+      end
+
+      def add_unparsed_line(line)
+        @unparsed_lines << line
       end
     end
   end

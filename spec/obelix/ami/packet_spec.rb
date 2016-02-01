@@ -28,6 +28,28 @@ module Obelix
         before { subject["ABC"] = 42 }
         it { expect(subject["abc"]).to eq(42) }
       end
+
+      context "unparsed_lines" do
+        it { expect(subject.unparsed_lines).to be_instance_of Array }
+
+        context "without lines" do
+          it { expect(subject.unparsed_lines).to be_empty }
+        end
+
+        context "with 2 lines" do
+          let(:line1) { "UNPARSED1" }
+          let(:line2) { "UNPARSED2" }
+
+          before do
+            subject.add_unparsed_line(line1)
+            subject.add_unparsed_line(line2)
+          end
+
+          it { expect(subject.unparsed_lines.length).to eql(2) }
+          it { expect(subject.unparsed_lines[0]).to eql(line1) }
+          it { expect(subject.unparsed_lines[1]).to eql(line2) }
+        end
+      end
     end
   end
 end

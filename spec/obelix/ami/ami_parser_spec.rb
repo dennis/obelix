@@ -105,9 +105,30 @@ module Obelix
           end
         end
 
-        context "it should return correct packet type" do
-          let(:input) { "Key1: Value1\r\nKey2: Value2\r\n\r\n" }
+        context "non key/value responses" do
+          let(:packet1) { double(Packet, :[]= => nil, :[] => nil, :add_unparsed_line => nil ) }
 
+          after { subject.parse(input) {} }
+
+          context "if no : in key/value line" do
+            let(:input) { "Key1: Value1\r\nKey2 Value2\r\nKey3: Value3\r\n\r\n" }
+
+            it do
+              expect(packet1).to receive(:[]=).with("Key1", "Value1").ordered
+              expect(packet1).to receive(:add_unparsed_line).with("Key2 Value2\r\n").ordered
+              expect(packet1).to receive(:add_unparsed_line).with("Key3: Value3\r\n").ordered
+            end
+          end
+
+          context "if \n key/value line" do
+            let(:input) { "Key1: Value1\r\nKey2\nValue2\r\n\r\n" }
+
+            it { expect(packet1).to receive(:[]=).with("Key1", "Value1") }
+            it { expect(packet1).to receive(:add_unparsed_line).with("Key2\nValue2\r\n") }
+          end
+        end
+
+        context "it should return correct packet type" do
           context "event" do
             before { allow(packet1).to receive(:[]).with("Event").and_return("Yup") }
 

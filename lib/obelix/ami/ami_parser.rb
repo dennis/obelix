@@ -29,10 +29,16 @@ module Obelix
         def parse_message(message)
           packet = Packet.new
 
-          message.split(EOL).each do |line|
-            key, value = line.split(':', 2)
+          verbatim = false
 
-            packet[key] = value.strip
+          message.split(EOL).each do |line|
+            if verbatim || line.index("\n") || line.index(':').nil?
+              verbatim = true
+              packet.add_unparsed_line(line + EOL)
+            else
+              key, value = line.split(':', 2)
+              packet[key] = value.strip
+            end
           end
 
           if packet['Event']
