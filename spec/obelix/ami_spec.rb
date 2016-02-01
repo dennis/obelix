@@ -3,8 +3,6 @@ require 'spec_helper'
 module Obelix
   describe AMI do
     let(:hostname) { 'hostname' }
-    let(:username) { 'username' }
-    let(:secret) { 'secret' }
     let(:transport) { double }
     let(:client) { double(:connect => nil) }
 
@@ -14,10 +12,10 @@ module Obelix
     end
 
     context "#self.client" do
-      after { subject::client(hostname, username, secret) }
+      after { subject::client(hostname) }
 
       it { expect(AMI::Client).to receive(:new).with(transport: transport) }
-      it { expect(client).to receive(:connect).with(hostname, username, secret) }
+      it { expect(client).to receive(:connect).with(hostname) }
     end
 
     context "EOM" do

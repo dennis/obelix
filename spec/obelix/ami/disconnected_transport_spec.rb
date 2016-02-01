@@ -6,11 +6,9 @@ module Obelix
       it_behaves_like "a transport"
 
       let(:hostname) { double }
-      let(:username) { double }
-      let(:password) { double }
 
       context "#connect" do
-        it { expect{ subject.connect(hostname, username, password) }.to raise_error(RuntimeError) }
+        it { expect{ subject.connect(hostname) }.to raise_error(RuntimeError) }
       end
 
       context "#write" do

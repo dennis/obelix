@@ -11,25 +11,23 @@ module Obelix
       end
       let(:bytes) { double("Packet as string") }
       let(:hostname) { double }
-      let(:username) { double }
-      let(:secret) { double }
       let(:parser) { double(AmiParser) }
       subject { Client.new(transport: transport, parser: parser) }
 
       context "#connect" do
         context "transport" do
-          after { subject.connect(hostname, username, secret) }
+          after { subject.connect(hostname) }
 
-          it { expect(transport).to receive(:connect).with(hostname, username, secret) }
+          it { expect(transport).to receive(:connect).with(hostname) }
           it { expect(transport).to receive(:read) }
         end
 
-        it { expect(subject.connect(hostname, username, secret)).to eql(subject) }
+        it { expect(subject.connect(hostname)).to eql(subject) }
 
         context "if greeting line is incorrect" do
           let(:transport) { double(TCPTransport, connect: nil, read: "BAD Stuff") }
 
-          it { expect{subject.connect(hostname, username, secret)}.to raise_error(RuntimeError) }
+          it { expect{subject.connect(hostname)}.to raise_error(RuntimeError) }
         end
       end
 
@@ -58,7 +56,7 @@ module Obelix
       end
 
       context "#read" do
-        subject { Client.new(transport: transport, parser: parser).connect(hostname, username, secret) }
+        subject { Client.new(transport: transport, parser: parser).connect(hostname) }
 
         # FIXME - tests needs to be rewritten for #read
         let(:parser) { double(AmiParser, parse: nil) }

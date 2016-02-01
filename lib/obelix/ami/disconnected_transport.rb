@@ -1,7 +1,7 @@
 module Obelix
   module AMI
     class DisconnectedTransport
-      def connect(hostname, username, secret)
+      def connect(hostname)
         raise "Disconnected"
       end
 

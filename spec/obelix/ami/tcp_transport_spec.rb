@@ -6,21 +6,19 @@ module Obelix
       it_behaves_like 'a transport'
 
       let(:hostname) { "localhost:1234" }
-      let(:username) { "username" }
-      let(:secret) { "secret" }
 
       let(:socket) { double(readpartial: "")  }
 
-      subject { TCPTransport.new.connect(hostname, username, secret) }
+      subject { TCPTransport.new.connect(hostname) }
 
       before do
         allow(TCPSocket).to receive(:open).and_return(socket)
       end
 
       context "#connect" do
-        after { TCPTransport.new.connect(hostname, username, secret) }
+        after { TCPTransport.new.connect(hostname) }
 
-        it { expect(subject.connect(hostname, username, secret)).to eql(subject) }
+        it { expect(subject.connect(hostname)).to eql(subject) }
 
         context "hostname is localhost:1234" do
           it { expect(TCPSocket).to receive(:open).with("localhost", 1234) }

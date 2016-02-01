@@ -3,8 +3,8 @@ module Obelix
     EOM = "\r\n\r\n"
     EOL = "\r\n"
 
-    def self.client(hostname, username, secret)
-      Client.new(transport: TCPTransport.new).connect(hostname, username, secret)
+    def self.client(hostname)
+      Client.new(transport: TCPTransport.new).connect(hostname)
     end
   end
 end

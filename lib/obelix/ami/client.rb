@@ -10,8 +10,8 @@ module Obelix
         @last_action_id = nil
       end
 
-      def connect(hostname, username, secret)
-        transport.connect(hostname, username, secret)
+      def connect(hostname)
+        transport.connect(hostname)
 
         greeting = transport.read
 

@@ -1,7 +1,7 @@
 module Obelix
   module AMI
     class TCPTransport
-      def connect(hostname, username, secret)
+      def connect(hostname)
         host, port = hostname.split ':'
         port = port.to_i unless port.nil?
 
