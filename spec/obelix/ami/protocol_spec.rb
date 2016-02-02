@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Obelix
   module AMI
-    describe Client do
+    describe Protocol do
       let(:read_data) { "data" }
       let(:transport) do
         transport = double(TCPTransport, connect: nil, write: nil)
@@ -12,7 +12,7 @@ module Obelix
       let(:bytes) { double("Packet as string") }
       let(:hostname) { double }
       let(:parser) { double(AmiParser) }
-      subject { Client.new(transport: transport, parser: parser) }
+      subject { Protocol.new(transport: transport, parser: parser) }
 
       context "#connect" do
         context "transport" do
@@ -21,8 +21,6 @@ module Obelix
           it { expect(transport).to receive(:connect).with(hostname) }
           it { expect(transport).to receive(:read) }
         end
-
-        it { expect(subject.connect(hostname)).to eql(subject) }
 
         context "if greeting line is incorrect" do
           let(:transport) { double(TCPTransport, connect: nil, read: "BAD Stuff") }
@@ -40,8 +38,6 @@ module Obelix
           packet
         end
 
-        it { expect(subject.write(packet)).to eql(action_id.to_s) }
-
         context "parser" do
           after { subject.write(packet) }
 
@@ -55,25 +51,33 @@ module Obelix
         end
       end
 
-      context "#read_response" do
-        # FIXME - tests needs to be rewritten for #read_response
+      context "#read" do
+        subject { Protocol.new(transport: transport, parser: parser) }
+
+        # FIXME - tests needs to be rewritten for #read
         let(:parser) { double(AmiParser, parse: nil) }
 
-        context "if nothing is read" do
-          it { expect(subject.read_response).to be_nil }
-          it { expect(parser).to receive(:parse).at_most(0) }
+        it { expect(subject.read).to be_nil }
+
+        context "transport" do
+          after { subject.read }
+          it { expect(transport).to receive(:read) }
         end
 
-        context "if response is available" do
-          let(:packet) do
-            packet = double
-            allow(packet).to receive(:[]).with("ActionID").and_return(action_id)
-            packet
-          end
-          before do
-            subject.write(packet)
-          end
+        context "parser; if data available" do
+          let(:response_packet) { double(:event? => false, :[] => "42") }
+          after { subject.read }
+          before { allow(parser).to receive(:parse).with(read_data).and_yield(response_packet) }
 
+          it { expect(parser).to receive(:parse) }
+        end
+
+        context "parser; if not data available" do
+          let(:transport) { double(TCPTransport, read: "") }
+
+          after { subject.read }
+
+          it { expect(parser).to receive(:parse).at_most(0) }
         end
       end
     end

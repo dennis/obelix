@@ -2,8 +2,7 @@ module Obelix
   module AMI
     class Client
       def initialize(transport: nil, parser: nil)
-        @transport = transport || DisconnectedTransport.new
-        @parser = parser || AmiParser.new
+        @protocol = Protocol.new(transport: transport, parser: parser)
 
         @responses = {}
         @events = []
@@ -11,47 +10,8 @@ module Obelix
       end
 
       def connect(hostname)
-        transport.connect(hostname)
-
-        greeting = transport.read
-
-        raise "Not asterisk? #{greeting}" unless greeting =~ /Asterisk Call Manager/
-
+        @protocol.connect(hostname)
         self
-      end
-
-      def read
-        if (str = transport.read).length > 0
-          parser.parse(str) do |packet|
-            if packet.event?
-              @events << Event.from_packet(packet)
-            else
-              @responses[packet['ActionID']] = Response.from_packet(packet)
-            end
-          end
-        end
-
-        nil
-      end
-
-      def read_response
-        return nil if @last_action_id.nil?
-
-        while !@responses.has_key?(@last_action_id)
-          read
-        end
-
-        response = @responses.delete @last_action_id
-        @last_action_id = nil
-        response
-      end
-
-      def write(packet)
-        @last_action_id = packet['ActionID'].to_s
-
-        @transport.write @parser.assemble(packet)
-
-        @last_action_id
       end
 
       def events
@@ -60,9 +20,29 @@ module Obelix
         r
       end
 
-      private
-        attr_accessor :parser
-        attr_reader :transport
+      def write(packet)
+        @last_action_id = packet['ActionID'].to_s
+        @protocol.write(packet)
+        @last_action_id
+      end
+
+      def read_response
+        return nil if @last_action_id.nil?
+
+        while !@responses.has_key?(@last_action_id)
+          @protocol.read do |packet|
+            if packet.event?
+              @events << Event.from_packet(packet)
+            else
+              @responses[packet['ActionID']] = Response.from_packet(packet)
+            end
+          end
+        end
+
+        response = @responses.delete @last_action_id
+        @last_action_id = nil
+        response
+      end
     end
   end
 end
