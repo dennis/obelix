@@ -1,12 +1,14 @@
 module Obelix
   module AMI
     class Client
-      def initialize(transport: nil, parser: nil)
-        @protocol = Protocol.new(transport: transport, parser: parser)
-
+      def initialize(protocol:)
+        @protocol = protocol
         @responses = {}
         @events = []
         @last_action_id = nil
+
+        @protocol.add_event_listener { |packet| @events << Event.from_packet(packet) }
+        @protocol.add_response_listener { |packet| @responses[packet['ActionID']] = Response.from_packet(packet) }
       end
 
       def connect(hostname)
@@ -30,13 +32,7 @@ module Obelix
         return nil if @last_action_id.nil?
 
         while !@responses.has_key?(@last_action_id)
-          @protocol.read do |packet|
-            if packet.event?
-              @events << Event.from_packet(packet)
-            else
-              @responses[packet['ActionID']] = Response.from_packet(packet)
-            end
-          end
+          @protocol.read
         end
 
         response = @responses.delete @last_action_id

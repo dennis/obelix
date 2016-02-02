@@ -38,7 +38,7 @@ module Obelix
 
         context "data delivered at once" do
           after do
-            subject.parse(input) {}
+            subject.parse(input)
           end
 
           context "one incomplete message" do
@@ -70,8 +70,8 @@ module Obelix
 
         context "data delivered fragmented" do
           after do
-            subject.parse(input1) {}
-            subject.parse(input2) {}
+            subject.parse(input1)
+            subject.parse(input2)
           end
 
           context "one incomplete message" do
@@ -108,7 +108,7 @@ module Obelix
         context "non key/value responses" do
           let(:packet1) { double(Packet, :[]= => nil, :[] => nil, :add_unparsed_line => nil ) }
 
-          after { subject.parse(input) {} }
+          after { subject.parse(input) }
 
           context "if no : in key/value line" do
             let(:input) { "Key1: Value1\r\nKey2 Value2\r\nKey3: Value3\r\n\r\n" }
@@ -129,14 +129,20 @@ module Obelix
         end
 
         context "it should return correct packet type" do
+          let(:input) { "Key1: Value1\r\nKey2: Value2\r\n\r\n" }
+
           context "event" do
             before { allow(packet1).to receive(:[]).with("Event").and_return("Yup") }
 
-            it { subject.parse(input) { |result| expect(result).to be_instance_of Event } }
+            it { expect(subject.parse(input)).to be_instance_of Array }
+            it { expect(subject.parse(input).length).to eql(1) }
+            it { expect(subject.parse(input)[0]).to be_instance_of Event }
           end
 
           context "response" do
-            it { subject.parse(input) { |result| expect(result).to be_instance_of Response } }
+            it { expect(subject.parse(input)).to be_instance_of Array }
+            it { expect(subject.parse(input).length).to eql(1) }
+            it { expect(subject.parse(input)[0]).to be_instance_of Response }
           end
         end
       end

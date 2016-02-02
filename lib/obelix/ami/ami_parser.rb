@@ -6,6 +6,7 @@ module Obelix
       end
 
       def parse(string)
+        result = []
         @buffer += string
 
         pos = @buffer.index(EOM)
@@ -13,10 +14,12 @@ module Obelix
           message = @buffer[0, pos]
           @buffer = @buffer[pos + EOM.length, @buffer.length - pos]
 
-          yield parse_message(message)
+          result << parse_message(message)
 
           pos = @buffer.index(EOM)
         end
+
+        result
       end
 
       def assemble(packet)

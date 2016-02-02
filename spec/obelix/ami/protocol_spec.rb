@@ -52,32 +52,68 @@ module Obelix
       end
 
       context "#read" do
+        let(:parser) { double(AmiParser, parse: [event]) }
         subject { Protocol.new(transport: transport, parser: parser) }
+        after { subject.read }
 
-        # FIXME - tests needs to be rewritten for #read
-        let(:parser) { double(AmiParser, parse: nil) }
+        context "from transport" do
+          let(:parser) { double(AmiParser, parse: []) }
+          context "read data" do
+            it { expect(transport).to receive(:read) }
+          end
 
-        it { expect(subject.read).to be_nil }
+          context "parse data returned" do
+            let(:read_data) { 'asdf' }
+            let(:transport) { transport = double(TCPTransport, read: read_data) }
 
-        context "transport" do
-          after { subject.read }
-          it { expect(transport).to receive(:read) }
+            it { expect(parser).to receive(:parse).with(read_data) }
+          end
         end
 
-        context "parser; if data available" do
-          let(:response_packet) { double(:event? => false, :[] => "42") }
-          after { subject.read }
-          before { allow(parser).to receive(:parse).with(read_data).and_yield(response_packet) }
+        context "invoke listeners" do
+          context "for event listener" do
+            let(:event) { double(Event, event?: true) }
 
-          it { expect(parser).to receive(:parse) }
-        end
+            it "event listener fired if event packet" do
+              listener_fired = false
+              subject.add_event_listener { listener_fired = true }
+              subject.read
 
-        context "parser; if not data available" do
-          let(:transport) { double(TCPTransport, read: "") }
+              expect(listener_fired).to be true
+            end
 
-          after { subject.read }
+            it "no listener fired if response packet" do
+              allow(event).to receive(:event?).and_return(false)
 
-          it { expect(parser).to receive(:parse).at_most(0) }
+              listener_fired = false
+              subject.add_event_listener { listener_fired = true }
+              subject.read
+
+              expect(listener_fired).to be false
+            end
+          end
+
+          context "for response listener" do
+            let(:event) { double(Event, event?: false) }
+
+            it "response listener fired if event response" do
+              listener_fired = false
+              subject.add_response_listener { listener_fired = true }
+              subject.read
+
+              expect(listener_fired).to be true
+            end
+
+            it "no listener fired if event packet" do
+              allow(event).to receive(:event?).and_return(true)
+
+              listener_fired = false
+              subject.add_event_listener { listener_fired = true }
+              subject.read
+
+              expect(listener_fired).to be true
+            end
+          end
         end
       end
     end

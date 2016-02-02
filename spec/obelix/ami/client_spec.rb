@@ -4,31 +4,29 @@ module Obelix
   module AMI
     describe Client do
       let(:read_data) { "data" }
-      let(:transport) do
-        transport = double(TCPTransport, connect: nil, write: nil)
-        allow(transport).to receive(:read).and_return("Asterisk Call Manager", read_data)
-        transport
-      end
       let(:bytes) { double("Packet as string") }
       let(:hostname) { double }
-      let(:parser) { double(AmiParser) }
-      subject { Client.new(transport: transport, parser: parser) }
+      let(:protocol) { double(Protocol, add_event_listener: nil, add_response_listener: nil, connect: nil, write: nil) }
+      subject { Client.new(protocol: protocol) }
+
+      context "#initialize" do
+        after { subject }
+        context "add event listener" do
+          it { expect(protocol).to receive(:add_event_listener) }
+        end
+        context "add response listener" do
+          it { expect(protocol).to receive(:add_response_listener) }
+        end
+      end
 
       context "#connect" do
-        context "transport" do
+        context "protocol" do
           after { subject.connect(hostname) }
 
-          it { expect(transport).to receive(:connect).with(hostname) }
-          it { expect(transport).to receive(:read) }
+          it { expect(protocol).to receive(:connect).with(hostname) }
         end
 
         it { expect(subject.connect(hostname)).to eql(subject) }
-
-        context "if greeting line is incorrect" do
-          let(:transport) { double(TCPTransport, connect: nil, read: "BAD Stuff") }
-
-          it { expect{subject.connect(hostname)}.to raise_error(RuntimeError) }
-        end
       end
 
       context "#write" do
@@ -42,39 +40,15 @@ module Obelix
 
         it { expect(subject.write(packet)).to eql(action_id.to_s) }
 
-        context "parser" do
+        context "protocol" do
           after { subject.write(packet) }
 
-          it { expect(parser).to receive(:assemble).with(packet) }
-        end
-
-        context "transport" do
-          after { subject.write(packet) }
-
-          it { expect(transport).to receive(:write).with(bytes) }
+          it { expect(protocol).to receive(:write).with(packet) }
         end
       end
 
       context "#read_response" do
-        # FIXME - tests needs to be rewritten for #read_response
-        let(:parser) { double(AmiParser, parse: nil) }
-
-        context "if nothing is read" do
-          it { expect(subject.read_response).to be_nil }
-          it { expect(parser).to receive(:parse).at_most(0) }
-        end
-
-        context "if response is available" do
-          let(:packet) do
-            packet = double
-            allow(packet).to receive(:[]).with("ActionID").and_return(action_id)
-            packet
-          end
-          before do
-            subject.write(packet)
-          end
-
-        end
+        pending
       end
     end
   end

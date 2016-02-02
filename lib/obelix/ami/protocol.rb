@@ -4,6 +4,16 @@ module Obelix
       def initialize(transport:, parser:)
         @transport = transport || DisconnectedTransport.new
         @parser = parser || AmiParser.new
+        @event_listeners = []
+        @response_listeners = []
+      end
+
+      def add_event_listener(&block)
+        @event_listeners << block
+      end
+
+      def add_response_listener(&block)
+        @response_listeners << block
       end
 
       def connect(hostname)
@@ -16,12 +26,14 @@ module Obelix
 
       def read
         if (str = transport.read).length > 0
-          parser.parse(str) do |packet|
-            yield packet
+          parser.parse(str).each do |packet|
+            if packet.event?
+              @event_listeners.each { |callback| callback.call(packet) }
+            else
+              @response_listeners.each { |callback| callback.call(packet) }
+            end
           end
         end
-
-        nil
       end
 
       def write(packet)
