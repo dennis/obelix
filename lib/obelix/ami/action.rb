@@ -7,10 +7,16 @@ module Obelix
         new(packet)
       end
 
+      def self.action_id
+        @@action_id ||= 0
+        @@action_id += 1
+        @@action_id
+      end
+
       def self.create(action, options = {})
         new(Packet.new({
           "Action" => action,
-          "ActionID" => 1,
+          "ActionID" => self.action_id,
         }.merge(options)))
       end
 

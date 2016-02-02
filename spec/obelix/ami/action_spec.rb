@@ -21,7 +21,15 @@ module Obelix
         it { expect(subject).to be_a Action }
 
         context "Packet" do
-          it { expect(Packet).to receive(:new).with(packet_opts); subject }
+          it do
+            expect(Packet).to receive(:new) do |actual_opts|
+              expect(actual_opts["ActionID"]).not_to be_nil
+              actual_opts["ActionID"] = 1; # We cannot really know what the counter is, so hardcode it
+              expect(actual_opts).to eql(packet_opts)
+            end
+
+            subject
+          end
         end
       end
 
@@ -32,7 +40,14 @@ module Obelix
         subject { Action.create("Dummy", options) }
 
         context "Packet" do
-          it { expect(Packet).to receive(:new).with(packet_opts); subject }
+          it do
+            expect(Packet).to receive(:new) do |actual_opts|
+              expect(actual_opts["ActionID"]).not_to be_nil
+              actual_opts["ActionID"] = 1; # We cannot really know what the counter is, so hardcode it
+              expect(actual_opts).to eql(packet_opts)
+            end
+            subject
+          end
         end
       end
     end
