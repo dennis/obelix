@@ -4,7 +4,9 @@ module Obelix
     EOL = "\r\n"
 
     def self.client(hostname)
-      Client.new(protocol: Protocol.new(transport: TCPTransport.new, parser: AmiParser.new)).connect(hostname)
+      protocol = Protocol.new(transport: TCPTransport.new, parser: AmiParser.new)
+      actions = ClientActions.new
+      Client.new(protocol: protocol, actions: actions).connect(hostname)
     end
   end
 end

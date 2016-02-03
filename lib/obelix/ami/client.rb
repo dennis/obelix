@@ -1,8 +1,12 @@
 module Obelix
   module AMI
     class Client
-      def initialize(protocol:)
+      attr_reader :actions
+
+      def initialize(protocol:, actions:)
         @protocol = protocol
+        @actions = actions
+
         @responses = {}
         @events = []
         @last_action_id = nil
@@ -38,6 +42,10 @@ module Obelix
         response = @responses.delete @last_action_id
         @last_action_id = nil
         response
+      end
+
+      def login(username, secret)
+        @actions.login(self, username, secret)
       end
     end
   end

@@ -2,6 +2,7 @@ require "obelix/version"
 
 require 'obelix/ami'
 require 'obelix/ami/client'
+require 'obelix/ami/client_actions'
 require 'obelix/ami/ami_parser'
 require 'obelix/ami/protocol'
 

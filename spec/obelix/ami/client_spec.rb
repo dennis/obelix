@@ -7,7 +7,8 @@ module Obelix
       let(:bytes) { double("Packet as string") }
       let(:hostname) { double }
       let(:protocol) { double(Protocol, add_event_listener: nil, add_response_listener: nil, connect: nil, write: nil) }
-      subject { Client.new(protocol: protocol) }
+      let(:actions) { double(ClientActions, :client= => nil) }
+      subject { Client.new(protocol: protocol, actions: actions) }
 
       context "#initialize" do
         after { subject }
@@ -49,6 +50,17 @@ module Obelix
 
       context "#read_response" do
         pending
+      end
+
+      context "actions" do
+        context "#login" do
+          let(:username) { 'username' }
+          let(:secret) { 'secret' }
+
+          after { subject.login(username, secret) }
+
+          it { expect(actions).to receive(:login).with(subject, username, secret) }
+        end
       end
     end
   end
