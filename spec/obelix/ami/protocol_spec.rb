@@ -27,6 +27,12 @@ module Obelix
 
           it { expect{subject.connect(hostname)}.to raise_error(RuntimeError) }
         end
+
+        context "if no greeting line" do
+          let(:transport) { double(TCPTransport, connect: nil, read: "") }
+
+          it { expect{subject.connect(hostname)}.to raise_error(RuntimeError) }
+        end
       end
 
       context "#write" do

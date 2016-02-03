@@ -42,12 +42,12 @@ module Obelix
         after { subject.read }
 
         before do
-          allow(IO).to receive(:select).with([socket], nil, nil, 1000).and_return(true)
+          allow(IO).to receive(:select).with([socket], nil, nil, 30).and_return(true)
           allow(IO).to receive(:select).with([socket], nil, nil, 0).and_return(false)
         end
 
         context "use IO::select to see status of socket" do
-          it { expect(IO).to receive(:select).with([socket], nil, nil, 1000) }
+          it { expect(IO).to receive(:select).with([socket], nil, nil, 30) }
         end
 
         context "if select returns false, don't try to read" do

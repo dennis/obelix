@@ -35,9 +35,9 @@ module Obelix
       def read_response
         return nil if @last_action_id.nil?
 
-        while !@responses.has_key?(@last_action_id)
-          @protocol.read
-        end
+        @protocol.read if !@responses.has_key?(@last_action_id)
+
+        raise "No answer for ActionID: #{@last_action_id}" unless @responses.has_key?(@last_action_id)
 
         response = @responses.delete @last_action_id
         @last_action_id = nil

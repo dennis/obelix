@@ -21,6 +21,7 @@ module Obelix
 
         greeting = transport.read
 
+        raise "Timeout while waiting for greeting" if greeting.empty?
         raise "Not asterisk? #{greeting}" unless greeting =~ /Asterisk Call Manager/
       end
 

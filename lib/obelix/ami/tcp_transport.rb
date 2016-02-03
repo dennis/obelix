@@ -17,7 +17,7 @@ module Obelix
       def read
         str = ''
 
-        if IO::select([@sock], nil, nil, 1000)
+        if IO::select([@sock], nil, nil, 30)
           begin
             str += @sock.readpartial(4096)
           end while IO::select([@sock], nil, nil, 0)
