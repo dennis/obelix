@@ -72,6 +72,19 @@ module Obelix
 
           it { expect(socket).to receive(:readpartial).with(4096).twice }
         end
+
+        context "#connected?" do
+          it { expect(subject.connected?).to be true }
+        end
+
+        context "#connected? after EOFError was thrown by inside #read" do
+          before do
+            allow(IO).to receive(:select).and_raise EOFError
+            subject.read
+          end
+
+          it { expect(subject.connected?).to be false }
+        end
       end
     end
   end

@@ -18,6 +18,10 @@ module Obelix
       context "#read" do
         it { expect{ subject.read }.to raise_error(RuntimeError) }
       end
+
+      context "#connected?" do
+        it { expect(subject.connected?).to be false }
+      end
     end
   end
 end

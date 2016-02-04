@@ -35,6 +35,8 @@ module Obelix
             end
           end
         end
+
+        @transport = DisconnectedTransport.new unless transport.connected?
       end
 
       def write(packet)

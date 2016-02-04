@@ -5,7 +5,7 @@ module Obelix
     describe Protocol do
       let(:read_data) { "data" }
       let(:transport) do
-        transport = double(TCPTransport, connect: nil, write: nil)
+        transport = double(TCPTransport, connect: nil, write: nil, :connected? => true)
         allow(transport).to receive(:read).and_return("Asterisk Call Manager", read_data)
         transport
       end
@@ -60,23 +60,40 @@ module Obelix
       context "#read" do
         let(:parser) { double(AmiParser, parse: [event]) }
         subject { Protocol.new(transport: transport, parser: parser) }
-        after { subject.read }
 
         context "from transport" do
           let(:parser) { double(AmiParser, parse: []) }
+          after { subject.read }
+
           context "read data" do
             it { expect(transport).to receive(:read) }
           end
 
           context "parse data returned" do
             let(:read_data) { 'asdf' }
-            let(:transport) { transport = double(TCPTransport, read: read_data) }
+            let(:transport) { transport = double(TCPTransport, read: read_data, :connected? => true) }
 
             it { expect(parser).to receive(:parse).with(read_data) }
           end
         end
 
+        context "set transport to DisconnectedTransport if transport.connected?" do
+          let(:event) { double(Event, event?: false) }
+          let(:transport) { double(TCPTransport, :connected? => false, read: "") }
+          let(:disconnectedTransport) { double(DisconnectedTransport) }
+
+          before do
+            allow(DisconnectedTransport).to receive(:new).and_return(disconnectedTransport)
+            allow(disconnectedTransport).to receive(:read).and_raise(RuntimeError)
+          end
+
+          it { expect(transport).to receive(:connected?); subject.read }
+          it { expect(DisconnectedTransport).to receive(:new).and_return(disconnectedTransport); subject.read }
+          it { expect{ subject.read; subject.read }.to raise_error(RuntimeError) }
+        end
+
         context "invoke listeners" do
+          after { subject.read }
           context "for event listener" do
             let(:event) { double(Event, event?: true) }
 

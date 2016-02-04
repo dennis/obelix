@@ -12,6 +12,10 @@ module Obelix
       def read
         raise "Disconnected"
       end
+
+      def connected?
+        false
+      end
     end
   end
 end
