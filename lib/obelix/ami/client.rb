@@ -32,18 +32,18 @@ module Obelix
         @last_action_id
       end
 
-      def read_response
-        return nil if @last_action_id.nil?
+      def read_response(action_id = nil)
+        action_id ||= @last_action_id
 
-        while !@responses.has_key?(@last_action_id)
+        return nil if action_id.nil?
+
+        while !@responses.has_key?(action_id)
           @protocol.read
         end
 
-        raise "No answer for ActionID: #{@last_action_id}" unless @responses.has_key?(@last_action_id)
+        raise "No answer for ActionID: #{action_id}" unless @responses.has_key?(action_id)
 
-        response = @responses.delete @last_action_id
-        @last_action_id = nil
-        response
+        @responses.delete action_id
       end
 
       def login(username, secret)
