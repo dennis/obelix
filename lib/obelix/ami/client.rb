@@ -11,8 +11,8 @@ module Obelix
         @events = []
         @last_action_id = nil
 
-        @protocol.add_event_listener { |packet| @events << Event.from_packet(packet) }
-        @protocol.add_response_listener { |packet| @responses[packet['ActionID']] = Response.from_packet(packet) }
+        @protocol.add_event_listener { |event| @events << event }
+        @protocol.add_response_listener { |response| @responses[response['ActionID']] = response }
       end
 
       def connect(hostname)
