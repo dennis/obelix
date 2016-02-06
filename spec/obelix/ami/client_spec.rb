@@ -53,13 +53,40 @@ module Obelix
       end
 
       context "actions" do
-        context "#login" do
-          let(:username) { 'username' }
-          let(:secret) { 'secret' }
+        let(:username) { 'username' }
+        let(:secret) { 'secret' }
+        let(:response) { double(CommandResult, :success! => nil) }
 
+        before {
+          allow(actions).to receive(:login).and_return(response)
+        }
+
+        context "#login" do
           after { subject.login(username, secret) }
 
-          it { expect(actions).to receive(:login).with(subject, username, secret) }
+          context "is proxied to ClientActions" do
+            it { expect(actions).to receive(:login).with(subject, username, secret) }
+          end
+
+          it { expect(subject.login(username, secret)).to eql(response) }
+
+          context "invokes success!" do
+            it { expect(response).not_to receive(:success!) }
+          end
+        end
+
+        context "#login!" do
+          after { subject.login!(username, secret) }
+
+          context "is proxied to ClientActions" do
+            it { expect(actions).to receive(:login).with(subject, username, secret) }
+          end
+
+          it { expect(subject.login(username, secret)).to eql(response) }
+
+          context "invokes success!" do
+            it { expect(response).to receive(:success!) }
+          end
         end
       end
     end

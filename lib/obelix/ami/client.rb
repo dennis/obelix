@@ -46,8 +46,25 @@ module Obelix
         @responses.delete action_id
       end
 
-      def login(username, secret)
-        @actions.login(self, username, secret)
+      def method_missing(meth, *args, &block)
+        meth = meth.to_s
+        bang = false
+
+        if meth.to_s[-1] == "!"
+          bang=true
+          meth=meth[0...-1]
+        end
+
+        meth = meth.to_sym
+
+        if @actions.respond_to? meth
+          result = @actions.send meth, *([self] + args), &block
+
+          result.success! if bang
+          result
+        else
+          raise NoMethodError
+        end
       end
     end
   end
