@@ -6,7 +6,8 @@ module Obelix
           "Username" => username,
           "Secret" => secret,
         })
-        client.read_response["response"] == "Success"
+        CommandResult.new(client.read_response["response"] == "Success")
+      end
       end
     end
   end

@@ -13,4 +13,6 @@ require 'obelix/ami/packet'
 require 'obelix/ami/action'
 require 'obelix/ami/event'
 require 'obelix/ami/response'
+require 'obelix/ami/command_result'
+require 'obelix/ami/database_show_command_result'
 
