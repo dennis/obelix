@@ -48,7 +48,11 @@ module Obelix
         end
       end
 
-      context "#read" do
+      context "#read_response" do
+        pending
+      end
+
+      context "#events" do
         pending
       end
 
