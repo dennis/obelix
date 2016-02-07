@@ -16,3 +16,4 @@ require 'obelix/ami/response'
 require 'obelix/ami/command_result'
 require 'obelix/ami/database_show_command_result'
 
+require 'obelix/ami/ami_actions/login'

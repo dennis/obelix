@@ -2,11 +2,9 @@ module Obelix
   module AMI
     class ClientActions
       def login(client, username, secret)
-        client.write Obelix::AMI::Action.create("Login", {
-          "Username" => username,
-          "Secret" => secret,
-        })
-        CommandResult.new(client.read_response["response"] == "Success")
+        AMIActions::Login.new(client, username, secret).execute
+      end
+
       end
       end
     end
