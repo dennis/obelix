@@ -1,11 +1,11 @@
 module Obelix
   module AMI
     class DisconnectedTransport
-      def connect(hostname)
+      def connect(_hostname)
         raise "Disconnected"
       end
 
-      def write(str)
+      def write(_str)
         raise "Disconnected"
       end
 

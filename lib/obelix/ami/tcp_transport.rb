@@ -28,7 +28,7 @@ module Obelix
               str += @sock.readpartial(4096)
             end while IO::select([@sock], nil, nil, 0)
           end
-        rescue EOFError => e
+        rescue EOFError
           @connected = false
         end
 
