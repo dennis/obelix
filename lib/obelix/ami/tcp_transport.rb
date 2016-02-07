@@ -24,9 +24,11 @@ module Obelix
 
         begin
           if IO::select([@sock], nil, nil, 30)
-            begin
+            loop do
               str += @sock.readpartial(4096)
-            end while IO::select([@sock], nil, nil, 0)
+
+              break unless IO::select([@sock], nil, nil, 0)
+            end
           end
         rescue EOFError
           @connected = false
