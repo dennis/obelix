@@ -3,3 +3,7 @@ rvm:
   - 2.0-head
   - 2.1-head
   - 2.2-head
+addons:
+  code_climate:
+    repo_token: c83edc0e4e41d4ea8812ea6bab451bce3d45d5980cb242b8f3390ab76e18e75b
+
