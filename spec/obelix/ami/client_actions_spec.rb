@@ -35,6 +35,18 @@ module Obelix
         it { expect(subject.database_del(client, family, key)).to eql(response) }
       end
 
+      context "#database_deltree" do
+        let(:family) { 'family' }
+
+        before { allow(AMIActions::DatabaseDeltree).to receive(:new).and_return(action) }
+
+        after { subject.database_deltree(client, family) }
+
+        it { expect(AMIActions::DatabaseDeltree).to receive(:new).with(client, family) }
+        it { expect(action).to receive(:execute) }
+        it { expect(subject.database_deltree(client, family)).to eql(response) }
+      end
+
       context "#database_put" do
         let(:family) { 'family' }
         let(:key) { 'key' }

@@ -9,6 +9,10 @@ module Obelix
         AMIActions::DatabaseDel.new(client, family, key).execute
       end
 
+      def database_deltree(client, family)
+        AMIActions::DatabaseDeltree.new(client, family).execute
+      end
+
       def database_put(client, family, key, value)
         AMIActions::DatabasePut.new(client, family, key, value).execute
       end
