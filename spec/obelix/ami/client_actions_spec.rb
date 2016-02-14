@@ -22,6 +22,19 @@ module Obelix
         it { expect(subject.login(client, username, secret)).to eql(response) }
       end
 
+      context "#database_del" do
+        let(:family) { 'family' }
+        let(:key) { 'key' }
+
+        before { allow(AMIActions::DatabaseDel).to receive(:new).and_return(action) }
+
+        after { subject.database_del(client, family, key) }
+
+        it { expect(AMIActions::DatabaseDel).to receive(:new).with(client, family, key) }
+        it { expect(action).to receive(:execute) }
+        it { expect(subject.database_del(client, family, key)).to eql(response) }
+      end
+
       context "#database_put" do
         let(:family) { 'family' }
         let(:key) { 'key' }
