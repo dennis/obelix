@@ -9,9 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Dennis Møllegaard Pedersen"]
   spec.email         = ["dennis@moellegaard.dk"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{Simple ruby gem for Asterisk interface}
+  spec.description   = %q{AMI client gem, for communicating with Asterisk. Get events and perform actions}
+  spec.homepage      = "https://github.com/dennis/obelix"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
