@@ -3,7 +3,7 @@ module Obelix
     class Client
       attr_reader :actions
 
-      def initialize(protocol:, actions:)
+      def initialize(protocol: TCPTransport.new, actions: AmiParser.new)
         @protocol = protocol
         @actions = actions
 

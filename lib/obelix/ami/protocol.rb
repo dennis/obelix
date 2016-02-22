@@ -1,10 +1,10 @@
 module Obelix
   module AMI
     class Protocol
-      def initialize(transport:, parser:)
-        @transport = transport || DisconnectedTransport.new
-        @parser = parser || AmiParser.new
-        @event_listeners = []
+      def initialize(transport: DisconnectedTransport.new, parser: AmiParser.new)
+        @transport          = transport
+        @parser             = parser
+        @event_listeners    = []
         @response_listeners = []
       end
 
