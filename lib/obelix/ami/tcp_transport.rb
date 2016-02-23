@@ -1,3 +1,5 @@
+require 'socket'
+
 module Obelix
   module AMI
     class TCPTransport
