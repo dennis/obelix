@@ -16,7 +16,6 @@ module Obelix
       end
 
       def write(str)
-        puts "TCPTransport#write: #{str.gsub("\n","\\n").gsub("\r","\\r")}"
         @sock.write str
       end
 
@@ -34,8 +33,6 @@ module Obelix
         rescue EOFError
           @connected = false
         end
-
-        #puts "TCPTransport#read: #{str.gsub("\n","\\n").gsub("\r","\\r")}"
 
         str
       end
